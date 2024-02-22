@@ -96,6 +96,51 @@ def get_vector(image_path):
     
     # Return the feature vector
     return feature_vector
+
+def r_similarity(tensor1, tensor2):
+    """
+    Calculates the reciprocal of the Euclidean distance between two tensors.
+
+    Args:
+      tensor1 (torch.Tensor): First input tensor.
+      tensor2 (torch.Tensor): Second input tensor.
+
+    Returns:
+      float: Reciprocal of the Euclidean distance between two tensors.
+    """
+
+    euclidian_distance = float((torch.norm(tensor1 - tensor2)).item())
+
+    # Avoid division by zero
+    if euclidian_distance == 0:
+      return 1
+    
+    return 1 / euclidian_distance
+
+def create_ranked_lists(features, total_features):
+  """
+    Create ranked lists using the feature similarities.
+
+    Args:
+      features (list of torch.Tensor): List of feature vectors.
+      total_features (int): Total number of features.
+    
+    Returns:
+      2D list: Ranked lists of image indices.
+  """
+
+  T = []
+  for target_idx in range(total_features):
+      
+      tq = []
+      for query_idx in range(total_features):
+          similarity = (query_idx, r_similarity(features[target_idx], features[query_idx]))
+          tq.append(similarity)
+      
+      # Add tq to T sorted by similarity in descending order
+      T.append(sorted(tq, key=lambda x: x[1], reverse=True))
+
+  return T
 if __name__ == "__main__":
 
   k = 5
