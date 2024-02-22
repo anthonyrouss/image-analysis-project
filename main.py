@@ -165,6 +165,27 @@ def create_hypergraph(ranked_lists, k):
       hypergraph.add_edge(target_idx, ranked_lists[target_idx][query_idx][0], idx=query_idx+1)
 
   return hypergraph
+
+def find_score_of_image(i, v, T):
+  """
+  Finds the score of image index 'v' in the hyperedge 'T[i]'.
+
+  Args:
+    i (int): Index of the target object.
+    v (int): Index of the query object.
+    T (2D list): Ranked lists.
+  
+  Return:
+    int: Score of 'v' in the ranked list, or -1 if not found.
+  """
+
+  score = -1
+  for j in range(len(T[i])):
+    if (T[i][j][0] == v):
+      score = T[i][j][1]
+      break
+  return score
+
 def create_incidence_matrix(hypergraph, k):
   """
   Creates an incidence matrix based on a hypergraph.
