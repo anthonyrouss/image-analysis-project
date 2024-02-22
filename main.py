@@ -252,6 +252,57 @@ def rank_normalization(L, T):
   normalized_T = [sorted(t,key = lambda x: x[1]) for t in normalized_T]
 
   return normalized_T
+
+def hypergraph_manifold_ranking(features, max_iters=15, k=3):
+  """
+  Perform hypergraph manifold ranking.
+
+  Args:
+    features (list): List of features extracted from each image.
+    max_iters (int): Number of maximum iterations.
+    k (int): Neighborhood size.
+  
+  Returns:
+    2D list: Normalized ranked lists.
+  """
+
+  L = len(features)
+  # Initialize ranked lists
+  T = create_ranked_lists(features, L)
+
+  for _ in range(max_iters):
+
+    # Perform Rank Normalization
+    T = rank_normalization(L, T)
+
+    # Create the hypergraph
+    hypergraph = create_hypergraph(T,k)
+
+    # Create the incidence matrix 'H'
+    H = np.array(create_incidence_matrix(hypergraph, k))
+
+    # Calculate similarity matrices
+    Sn = H @ H.T
+    Sv = H.T @ H
+    
+    # Calculate Hadamard product (element-wise multiplication)
+    S = np.multiply(Sn, Sv)
+
+    # Compute pairwise cartesian product
+    C_prod = pairwise_cartesian_prod(hypergraph, H)
+
+    # Compute the affinity matrix 'W'
+    W = np.multiply(C_prod, S)
+
+    # Update T based on affinity matrix
+    for i in range(len(features)):
+      for j in range(len(features)):
+        T[i][j] = (T[i][j][0], W[i][T[i][j][0]])
+
+    # Sort each sublist
+    T = [sorted(t,key = lambda x: x[1], reverse=True) for t in T]
+
+  return T
 if __name__ == "__main__":
 
   k = 5
