@@ -41,3 +41,30 @@ dataset = list(dataset)
 
 # Separate images and labels
 C,labels = map(list, zip(*dataset)) 
+
+def get_target_image_indices(target_images_num=5):
+  """
+  Generates a list of unique random indices representing target images.
+
+  Args:
+    total_images (int): Total number of images.
+    target_images_num (int, optional, default=5): Number of target images to select.
+  
+  Returns:
+    list: List of unique random indices.
+  """
+
+  target_image_indices = []
+  
+  while len(target_image_indices) < target_images_num:
+    temp_rnd = rnd.randint(0, len(C))
+    if (temp_rnd not in target_image_indices):
+      target_image_indices.append(temp_rnd)
+
+  return target_image_indices
+if __name__ == "__main__":
+
+  k = 5
+  
+  target_images = get_target_image_indices()
+  print(f"Target images: {target_images}")
