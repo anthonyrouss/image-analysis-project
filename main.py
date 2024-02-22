@@ -141,6 +141,30 @@ def create_ranked_lists(features, total_features):
       T.append(sorted(tq, key=lambda x: x[1], reverse=True))
 
   return T
+
+def create_hypergraph(ranked_lists, k):
+  """
+    Creates a hypergraph based on ranked lists.
+
+    Args:
+      ranked_lists (2D list): Ranked lists of image indices.
+      k (int): Number of k-nearest neighbors for each target image.
+    
+    Returns:
+      nx.DiGraph: Hypergraph data structure.
+  """
+
+  hypergraph = nx.DiGraph() 
+  
+  for target_idx in range(len(ranked_lists)):
+    # Add nodes for each image
+    hypergraph.add_node(target_idx)
+
+    for query_idx in range(k):
+      # Create hyperedges for the k-nearest neighbors
+      hypergraph.add_edge(target_idx, ranked_lists[target_idx][query_idx][0], idx=query_idx+1)
+
+  return hypergraph
 if __name__ == "__main__":
 
   k = 5
