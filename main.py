@@ -334,6 +334,32 @@ def calculate_accuracy(ranked_lists, labels, k, target_images):
     accuracy_scores.append(accuracy)
     
   return accuracy_scores
+
+def display(ranked_list, accuracy):
+  """
+  Display images along with information in a matplotlib subplot.
+
+  Parameters:
+  - ranked_list (list): A list of tuples containing image indices and scores.
+  - accuracy (float): The accuracy value.
+  """
+
+  _, axs = plt.subplots(1, len(ranked_list), figsize=(14, 4))
+  plt.gcf().canvas.manager.set_window_title(f"Target image {ranked_list[0][0]}")
+
+  for ax, (img_idx, score) in zip(axs, ranked_list):
+      image = np.transpose(C[img_idx], (1, 2, 0))
+      ax.imshow(image)
+      title = f"Label: {labels[img_idx]}\nScore: {score:.3f}"
+      if img_idx == ranked_list[0][0]:
+        title += "\n(target image)"
+
+      ax.set_title(title)
+      ax.axis('off')
+
+  plt.suptitle(f"Accuracy: {accuracy:.3f}")
+  plt.show()
+
 if __name__ == "__main__":
 
   k = 5
