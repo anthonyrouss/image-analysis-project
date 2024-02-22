@@ -303,9 +303,43 @@ def hypergraph_manifold_ranking(features, max_iters=15, k=3):
     T = [sorted(t,key = lambda x: x[1], reverse=True) for t in T]
 
   return T
+
+def calculate_accuracy(ranked_lists, labels, k, target_images):
+  """"
+  Calculates the accuracy of the ranked lists for a set of target images.
+
+  Args:
+    ranked_lists (2D list): Ranked lists of image indices.
+    labels (list): Labels of the images.
+    k (int): Number of nearest neighbors.
+    target_images (list): Indices of target images.
+
+  Returns:
+    list: List of accuracy scores corresponding to each target image.    
+  """
+
+  # Sum of integers from 1 to k
+  sum = k * (k+1) // 2
+  
+  accuracy_scores = []
+  for i in target_images:
+    m = 0
+    accuracy = 0
+    for j in ranked_lists[i][:k]:
+      if labels[j[0]] == labels[i]:
+        accuracy += (k-m)/sum
+      else:
+        accuracy += 0
+      m += 1
+    accuracy_scores.append(accuracy)
+    
+  return accuracy_scores
 if __name__ == "__main__":
 
   k = 5
   
   target_images = get_target_image_indices()
   print(f"Target images: {target_images}")
+
+  final_ranked_lists = hypergraph_manifold_ranking(C, k=k)
+  accuracy_list = calculate_accuracy(final_ranked_lists, labels, k, target_images)
