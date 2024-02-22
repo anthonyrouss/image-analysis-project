@@ -225,6 +225,33 @@ def pairwise_cartesian_prod(hypergraph, H):
         C1[i][j] += pairwise_similarity_rel(eq, i, j, H)
         
   return C1
+
+def rank_normalization(L, T):
+  """"
+  Creates a symmetric similarity matrix based on ranked lists.
+
+  Args:
+    L (int): Length of the ranked lists.
+    T (2D list): Ranked lists.
+
+  Returns:
+    2D list: Normalized ranked lists.
+  """
+
+  normalized_T = []
+
+  for i in range(L):
+    temp = []
+
+    for j in range(L):
+      score = 2 * L - (find_score_of_image(i,j,T) + find_score_of_image(j,i,T))
+      temp.append((j, score))
+    normalized_T.append(temp)
+
+  # Sort each sublist by similarity score
+  normalized_T = [sorted(t,key = lambda x: x[1]) for t in normalized_T]
+
+  return normalized_T
 if __name__ == "__main__":
 
   k = 5
