@@ -165,6 +165,26 @@ def create_hypergraph(ranked_lists, k):
       hypergraph.add_edge(target_idx, ranked_lists[target_idx][query_idx][0], idx=query_idx+1)
 
   return hypergraph
+def create_incidence_matrix(hypergraph, k):
+  """
+  Creates an incidence matrix based on a hypergraph.
+
+  Args:
+    hypergraph (nx.DiGraph): Hypergraph representation.
+    k (int): Number of k-nearest neighbors.
+  
+  Returns:
+    2D list: Incidence matrix.
+  """
+  
+  total_nodes = len(hypergraph.nodes)
+  H = np.zeros((total_nodes, total_nodes))
+
+  for node_idx in hypergraph.nodes:
+    for neighbor_idx, edge_data in hypergraph[node_idx].items():
+      H[node_idx][neighbor_idx] = 1 - math.log(edge_data["idx"], k+1)
+
+  return H
 if __name__ == "__main__":
 
   k = 5
