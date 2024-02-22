@@ -390,3 +390,11 @@ if __name__ == "__main__":
 
   final_ranked_lists = hypergraph_manifold_ranking(C, k=k)
   accuracy_list = calculate_accuracy(final_ranked_lists, labels, k, target_images)
+
+  target_ranked_lists = [final_ranked_lists[i][:k] for i in target_images]
+  for i in range(len(target_ranked_lists)):
+    ranked_list = target_ranked_lists[i]
+    display(ranked_list, accuracy_list[i])
+
+  for i in range(len(target_images)):
+    print(f"t{target_images[i]} = {final_ranked_lists[target_images[i]][0:k]}, accuracy={accuracy_list[i]:.3f}")
