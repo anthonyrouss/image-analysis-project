@@ -62,6 +62,40 @@ def get_target_image_indices(target_images_num=5):
       target_image_indices.append(temp_rnd)
 
   return target_image_indices
+
+def get_vector(image_path):
+    """
+    Extracts a feature vector from the given image using a pre-trained ResNet50 model.
+
+    Args:
+      image_path (str): The file path of the input image.
+    
+    Returns:
+      torch.Tensor: The feature vector extracted from the image.
+    """
+    
+    # Load the image with Pillow library
+    img = Image.open(image_path)
+
+    # Create a vector of zeros that will hold our feature vector (the 'avgpool' layer has an output size of 2048)
+    feature_vector = torch.zeros(2048)
+    
+    # Define a function that will copy the output of a layer
+    def copy_data(o):
+        # Reshape the output tensor to match the shape of the feature_vector
+        feature_vector.copy_(o.data.view(feature_vector.shape))
+    
+    # Attach that function to our selected layer
+    h = layer.register_forward_hook(copy_data)
+
+    # Run the model on our transformed image
+    model(img)
+
+    # Detach our copy function from the layer
+    h.remove()
+    
+    # Return the feature vector
+    return feature_vector
 if __name__ == "__main__":
 
   k = 5
