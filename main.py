@@ -185,6 +185,46 @@ def create_incidence_matrix(hypergraph, k):
       H[node_idx][neighbor_idx] = 1 - math.log(edge_data["idx"], k+1)
 
   return H
+
+def pairwise_similarity_rel(eq, vi, vj, H):
+  """ 
+  Compute the weight assigned to the hyperedge eq and the pairwise similarity relationship (p(eq,vi,vj))
+  
+  Args:
+    eq (int): indicate the hyper edge
+    vi (int): Hyper node
+    vj (int): Hyper node
+    H (np array): incident matrix
+  """
+  
+  w_eq = 0
+  for i in H[eq]:
+    w_eq += i
+  return w_eq * H[eq][vi] * H[eq][vj]
+
+def pairwise_cartesian_prod(hypergraph, H):
+  """
+  Computes the similarity measure based on a hypergraph and an incidence matrix.
+
+  Args:
+    hypergraph (hypergraph): The hypergraph with the edges and nodes.
+    H (np array): Incident matrix.
+  
+  Returns:
+    2D List: the similarity measure.
+  """
+
+  total_nodes = len(hypergraph.nodes)
+  C1 = np.zeros((total_nodes, total_nodes))
+
+  for eq in hypergraph.nodes:
+    neighbors = [i for i, _ in hypergraph[eq].items()]
+
+    for i in neighbors:
+      for j in neighbors:
+        C1[i][j] += pairwise_similarity_rel(eq, i, j, H)
+        
+  return C1
 if __name__ == "__main__":
 
   k = 5
